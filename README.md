@@ -6,11 +6,11 @@ Los registros se guardan **solo en el teléfono** donde se usa la app. No se env
 
 ## Publicar en GitHub Pages
 
-1. Crea un repositorio nuevo en GitHub (por ejemplo `registro-arco`), público.
+1. Crea un repositorio público llamado `USUARIO.github.io` (o cualquier nombre).
 2. Sube todos los archivos de esta carpeta, incluida la carpeta `icons`.
 3. En el repositorio, ve a **Settings → Pages**.
 4. En "Build and deployment", elige **Deploy from a branch**, rama `main`, carpeta `/ (root)`, y guarda.
-5. En uno o dos minutos la app queda en `https://TU-USUARIO.github.io/registro-arco/`.
+5. En uno o dos minutos la app queda publicada. La versión oficial está en https://registro-arco.github.io/
 
 ## Instalar en el teléfono
 
