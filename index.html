@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Registro ARCO</title>
+<meta name="description" content="Registro de emociones con el método ARCO: antecedentes, respuesta y consecuencias.">
+<meta name="theme-color" content="#EEF2F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10161C" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ARCO">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: app de una columna para celular; navegación inferior (Registros, Evolución, Ajustes), formulario A·R·C en tarjetas, barra de guardar fija. */
+:root{
+  --bg:#EEF2F5; --surface:#FFFFFF; --surface-2:#E3E9EF; --ink:#18212B; --muted:#5A6878; --line:#D3DCE4;
+  --accent:#2C5C8F; --accent-ink:#FFFFFF; --accent-soft:#DCE7F3; --danger:#B3362B; --ok:#2E7D5B; --warnbg:#FBEFD9; --warnink:#7A4E0C;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:14px; --nav-h:64px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bg:#10161C; --surface:#18212A; --surface-2:#222D38; --ink:#E5EBF1; --muted:#97A5B4; --line:#2C3946;
+  --accent:#8DB6E3; --accent-ink:#0E1A27; --accent-soft:#1F3247; --danger:#F08A7F; --ok:#7CCBA6; --warnbg:#3A2E17; --warnink:#F2CF8E; color-scheme:dark } }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+header.top .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;min-height:60px}
+.brand{flex:1;min-width:0}
+.brand h1{font-family:var(--f-display);font-size:1.3rem;margin:0;line-height:1.1;letter-spacing:-.01em}
+.brand .sub{font-size:.78rem;color:var(--muted)}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:10px;height:40px;min-width:40px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:.9rem}
+.iconbtn svg{width:18px;height:18px}
+
+main{padding-block:16px calc(var(--nav-h) + 110px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+main.noform{padding-bottom:calc(var(--nav-h) + 110px + env(safe-area-inset-bottom,0px))}
+
+/* Navegación inferior */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .wrap{display:grid;grid-template-columns:repeat(3,1fr);height:var(--nav-h)}
+nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.75rem;color:var(--muted)}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:700}
+
+.fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:15px 22px;font-weight:700;font-size:1rem;box-shadow:0 6px 20px rgba(0,0,0,.22);display:flex;align-items:center;gap:8px}
+.fab svg{width:20px;height:20px}
+
+/* Resumen */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.panel h2{font-family:var(--f-display);font-size:1.1rem;margin:0}
+.panel p{margin:0}
+.nums{display:flex;gap:24px;flex-wrap:wrap}
+.num b{font-family:var(--f-display);font-size:1.6rem;display:block;line-height:1;font-variant-numeric:tabular-nums}
+.num span{font-size:.8rem;color:var(--muted)}
+.rainbow{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.rainbow span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.eyebrow{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.banner{border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:.92rem;background:var(--warnbg);color:var(--warnink)}
+.banner.info{background:var(--accent-soft);color:var(--ink)}
+.banner .acts{display:flex;gap:12px}
+.banner button{background:none;border:0;padding:0;font-weight:700;color:inherit;text-decoration:underline;text-underline-offset:3px}
+
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:.9rem;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+
+.day{display:flex;flex-direction:column;gap:8px}
+.day h2{font-family:var(--f-display);font-size:.95rem;margin:4px 2px 0;color:var(--muted);font-weight:600}
+.day h2::first-letter{text-transform:uppercase}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;text-align:left;width:100%}
+.card .dot{width:12px;height:12px;margin-top:6px}
+.card .t{font-weight:700;min-width:0}
+.card .h{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card .p{grid-column:2/4;font-size:.9rem;color:var(--muted);min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card .meta{grid-column:2/4;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meter{display:flex;gap:2px}
+.meter i{width:9px;height:6px;border-radius:2px;background:var(--surface-2)}
+.meter i.on{background:var(--ink)}
+.pill{font-size:.72rem;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}
+.pill.warn{border-color:var(--danger);color:var(--danger)}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:24px 20px;display:flex;flex-direction:column;gap:12px}
+.empty h2{font-family:var(--f-display);margin:0;font-size:1.3rem;text-wrap:balance}
+.empty p{margin:0;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;text-align:left}
+
+/* Formulario */
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:16px}
+.sechead{display:flex;align-items:center;gap:12px}
+.letter{font-family:var(--f-display);font-size:1.5rem;font-weight:700;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}
+.sechead h2{font-family:var(--f-display);font-size:1.1rem;margin:0;line-height:1.2}
+.sechead p{margin:0;font-size:.82rem;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label,.lbl{font-weight:700;font-size:.95rem}
+.hint{font-size:.82rem;color:var(--muted);margin:-2px 0 2px}
+input[type=text],input[type=password],input[type=datetime-local],textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-size:16px}
+input[type=datetime-local]{min-height:44px}
+textarea{min-height:76px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row2>*{min-width:0}
+@media (max-width:420px){.row2{grid-template-columns:1fr}}
+.intens{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.intens button{height:42px;border:1px solid var(--line);background:var(--bg);border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums;padding:0}
+.intens button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.emo{display:flex;flex-wrap:wrap;gap:8px}
+.emo .chip .dot{width:9px;height:9px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:start}
+.item .n{font-family:var(--f-display);font-weight:700;color:var(--muted);text-align:center;padding-top:10px;font-variant-numeric:tabular-nums}
+.item textarea{min-height:48px}
+.item .tools{display:flex;flex-direction:column;gap:2px}
+.mini{border:0;background:none;color:var(--muted);width:32px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.mini:hover{background:var(--surface-2)}
+.mini svg{width:16px;height:16px}
+.add{border:1px dashed var(--line);background:none;border-radius:10px;padding:10px;color:var(--accent);font-weight:700;text-align:left}
+.subsec{border-top:1px solid var(--line);padding-top:14px}
+.cond{background:var(--bg);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.cond .ct{font-weight:700;font-size:.92rem;overflow-wrap:anywhere}
+.cond .ct span{color:var(--muted);font-weight:400}
+.cond textarea{background:var(--surface)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;flex-wrap:wrap}
+.seg button{border:0;background:var(--surface);padding:6px 11px;font-size:.85rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.item .seg{margin-top:6px}
+
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.savebar .wrap{display:flex;gap:10px;padding-block:12px}
+.btn{border-radius:10px;padding:12px 18px;font-weight:700;border:1px solid var(--line);background:var(--surface)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.savebar .btn.primary{flex:1}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.danger.armed{background:var(--danger);color:var(--surface)}
+.err{background:var(--surface);border:1px solid var(--danger);color:var(--danger);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.notice{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.9rem;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+/* Detalle */
+.dhead{display:flex;flex-direction:column;gap:6px}
+.dhead .emoname{font-family:var(--f-display);font-size:1.9rem;font-weight:700;line-height:1.05;display:flex;align-items:center;gap:10px;letter-spacing:-.01em;overflow-wrap:anywhere}
+.dhead .emoname .dot{width:16px;height:16px}
+.dhead .when{color:var(--muted);font-variant-numeric:tabular-nums}
+.big{font-family:var(--f-display);font-size:1.1rem}
+.kv{display:flex;flex-direction:column;gap:4px}
+.kv .k{font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.kv .v{white-space:pre-wrap;overflow-wrap:anywhere}
+.kv ol{margin:0;padding-left:22px}
+.kv ol li{white-space:pre-wrap;overflow-wrap:anywhere}
+.muted{color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:4px;border:0;background:none;padding:6px 0;color:var(--accent);font-weight:700;align-self:flex-start}
+
+/* Evolución */
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{fill:var(--muted);font-size:10px;font-family:var(--f-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .avg{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;opacity:.55}
+.range{display:flex;gap:6px}
+.hbars{display:flex;flex-direction:column;gap:10px}
+.hbar{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.hbar .nm{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar .tr{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.hbar .tr span{display:block;height:100%;border-radius:5px}
+.hbar .vl{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.82rem;white-space:nowrap}
+.split{display:flex;height:28px;border-radius:8px;overflow:hidden;font-size:.78rem;font-weight:700}
+.split span{display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;white-space:nowrap}
+
+/* Ajustes */
+.optrow{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px}
+.optrow h3{margin:0;font-family:var(--f-display);font-size:1.05rem}
+.optrow p{margin:0;color:var(--muted);font-size:.9rem}
+.optrow .btn{align-self:flex-start}
+.copyarea{width:100%;min-height:200px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.steps{margin:0;padding-left:20px;color:var(--muted);font-size:.9rem}
+
+/* Bloqueo */
+#lock{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px)}
+#lock h2{font-family:var(--f-display);margin:0;font-size:1.4rem}
+.pindots{display:flex;gap:14px;height:16px}
+.pindots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink)}
+.pindots i.on{background:var(--ink)}
+.pindots.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.keypad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+.keypad button{height:72px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-family:var(--f-display);font-size:1.6rem}
+.keypad button.ghost{border:0;background:none;font-size:.9rem;font-family:var(--f-body);color:var(--muted)}
+.lockmsg{min-height:1.5em;color:var(--danger);font-size:.9rem}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 84px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.92rem;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion:no-preference){.card,.fab,.keypad button{transition:transform .12s ease}.card:active,.fab:active,.keypad button:active{transform:scale(.97)}}
+@media (prefers-reduced-motion:reduce){.pindots.shake{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><h1 id="htitle">Registro ARCO</h1><div class="sub" id="hsub">Guardado solo en este teléfono</div></div>
+  <button class="iconbtn" data-act="lock" id="lockbtn" hidden aria-label="Bloquear">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+  </button>
+</div></header>
+<main class="wrap" id="app"></main>
+<div id="bottom"></div>
+<nav class="tabs" id="tabs"><div class="wrap">
+  <button data-act="tab" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg>Registros</button>
+  <button data-act="tab" data-v="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></svg>Evolución</button>
+  <button data-act="tab" data-v="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
+</div></nav>
+<div id="lock" hidden>
+  <h2>Registro ARCO</h2>
+  <div class="muted">Ingresa tu PIN</div>
+  <div class="pindots" id="pindots"></div>
+  <div class="lockmsg" id="lockmsg"></div>
+  <div class="keypad" id="keypad"></div>
+</div>
+<input type="file" id="importfile" accept=".json,application/json" hidden>
+
+<script>
+(function(){
+"use strict";
+const EMOS=[["Ansiedad","#E07B39"],["Miedo","#7A5AC8"],["Tristeza","#4C7BD1"],["Rabia","#D2483C"],["Frustración","#B0477A"],["Vergüenza","#E07AA6"],["Culpa","#8B6D5C"],["Asco","#5E9A4B"],["Alegría","#E3B22A"],["Calma","#2BA7A0"],["Sorpresa","#3FA4D6"],["Otra","#7D8894"]];
+const EMOCOL=Object.fromEntries(EMOS);
+const K={rec:"arco-registros-v1",draft:"arco-borrador-v1",pin:"arco-pin-v1",backup:"arco-ultimo-respaldo",hideInstall:"arco-ocultar-instalar",hideBackup:"arco-posponer-respaldo"};
+const LOCK_AFTER_MS=60*1000;
+
+let records=[], view="list", tab="list", currentId=null, f=null, filter=null, formErr="", draftRestored=false, delArmed=false, exportText=null, toastT=null, example=false, range=30, installEvt=null, pinStep=null, pinTmp="", hiddenAt=0;
+
+const $=s=>document.querySelector(s);
+const app=$("#app"), bottom=$("#bottom");
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=n=>String(n).padStart(2,"0");
+const nowLocal=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const parseLocal=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s||"");return m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5]):new Date(NaN)};
+const fmtDay=s=>{const d=parseLocal(s);if(isNaN(d))return"Sin fecha";const t=new Date();t.setHours(0,0,0,0);const dd=new Date(d);dd.setHours(0,0,0,0);const diff=Math.round((t-dd)/864e5);const base=d.toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long"});return diff===0?"Hoy · "+base:diff===1?"Ayer · "+base:base};
+const fmtTime=s=>{const d=parseLocal(s);return isNaN(d)?"":d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit",hour12:false})};
+const fmtFull=s=>{const d=parseLocal(s);return isNaN(d)?"Sin fecha":d.toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" · "+fmtTime(s)};
+const emoKey=r=>EMOCOL[r.emocion]?r.emocion:"Otra";
+const emoName=r=>r.emocion==="Otra"?(r.emocionOtra||"Otra emoción"):(r.emocion||"Sin emoción");
+const emoColor=r=>EMOCOL[emoKey(r)];
+const clone=o=>JSON.parse(JSON.stringify(o));
+const dec=n=>n.toFixed(1).replace(".",",");
+const icon={
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 15 6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  back:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>'
+};
+
+/* ---------- datos ---------- */
+function blankCond(){return{texto:"",tipo:"hecha",corto:"",largo:""}}
+function blank(){return{id:uid(),fecha:nowLocal(),duracion:"",emocion:"",emocionOtra:"",intensidad:0,antecedentes:"",antTipo:[],pensamientos:[""],sensaciones:[""],conductas:[blankCond()],efectoEmocion:"",efectoMalestar:"",ayuda:"",cortoGeneral:"",largoGeneral:"",relacionadoCon:"",creado:"",actualizado:""}}
+function normalize(r){const o=Object.assign(blank(),r||{});["pensamientos","sensaciones","antTipo"].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[];o[k]=o[k].map(x=>String(x??""))});if(!Array.isArray(o.conductas))o.conductas=[];o.conductas=o.conductas.map(c=>Object.assign(blankCond(),typeof c==="string"?{texto:c}:c));["duracion","emocion","emocionOtra","antecedentes","efectoEmocion","efectoMalestar","ayuda","cortoGeneral","largoGeneral","relacionadoCon","fecha"].forEach(k=>o[k]=String(o[k]??""));o.intensidad=Math.max(0,Math.min(10,+o.intensidad||0));return o}
+const filled=a=>a.filter(x=>String(typeof x==="string"?x:x.texto).trim());
+function incomplete(r){return !r.antecedentes.trim()||(!filled(r.pensamientos).length&&!filled(r.sensaciones).length&&!filled(r.conductas).length)||!(r.efectoEmocion||r.cortoGeneral.trim()||r.conductas.some(c=>c.corto.trim()))}
+function load(){try{const a=JSON.parse(ls.get(K.rec,"[]"));return Array.isArray(a)?a.map(normalize):[]}catch(e){return[]}}
+function saveAll(){if(!ls.set(K.rec,JSON.stringify(records)))throw new Error("storage")}
+function persist(r){r.actualizado=new Date().toISOString();if(!r.creado)r.creado=r.actualizado;const prev=records;const i=records.findIndex(x=>x.id===r.id);records=i>=0?records.map(x=>x.id===r.id?r:x):[...records,r];try{saveAll()}catch(e){records=prev;throw e}}
+function remove(id){const prev=records;records=records.filter(x=>x.id!==id);try{saveAll()}catch(e){records=prev;throw e}}
+
+/* ---------- render ---------- */
+function setChrome(){
+  const inForm=view==="form", inDetail=view==="detail";
+  $("#tabs").hidden=inForm||inDetail;
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===tab&&!inForm&&!inDetail?"page":"false"));
+  $("#lockbtn").hidden=!ls.get(K.pin,null);
+  const titles={list:"Registro ARCO",stats:"Evolución",settings:"Ajustes"};
+  $("#htitle").textContent=inForm?(records.some(x=>x.id===f.id)?"Editar registro":"Nuevo registro"):inDetail?"Registro":titles[tab];
+  $("#hsub").textContent=`${records.length} registro${records.length===1?"":"s"} · guardado solo en este teléfono`;
+}
+function render(){
+  delArmed=false;
+  if(view==="form")renderForm();
+  else if(view==="detail")renderDetail();
+  else if(tab==="stats")renderStats();
+  else if(tab==="settings")renderSettings();
+  else renderList();
+  setChrome();
+}
+const fab=()=>`<button class="fab" data-act="new">${icon.plus}Nuevo registro</button>`;
+function meter(n){let s="";for(let i=1;i<=10;i++)s+=`<i class="${i<=n?"on":""}"></i>`;return `<span class="meter" aria-label="Intensidad ${n} de 10">${s}</span>`}
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+
+function banners(){
+  let h="";
+  if(!isStandalone()&&!ls.get(K.hideInstall,null)){
+    if(installEvt)h+=`<div class="banner info"><span>Instala la app para abrirla desde tu pantalla de inicio, incluso sin internet.</span><span class="acts"><button data-act="install">Instalar</button><button data-act="hideinstall">Ahora no</button></span></div>`;
+    else if(isIOS())h+=`<div class="banner info"><span>Para instalarla, toca <b>Compartir</b> y luego <b>Agregar a inicio</b>. Así tus registros quedan guardados de forma más segura.</span><span class="acts"><button data-act="hideinstall">Entendido</button></span></div>`;
+  }
+  const last=+ls.get(K.backup,0), snooze=+ls.get(K.hideBackup,0), now=Date.now();
+  if(records.length>=3&&now-last>7*864e5&&now-snooze>3*864e5){
+    h+=`<div class="banner"><span>${last?"Hace más de una semana que no haces un respaldo.":"Aún no has hecho un respaldo de tus registros."} Si se borran los datos del teléfono, el respaldo es lo único que los recupera.</span><span class="acts"><button data-act="dljson">Descargar respaldo</button><button data-act="snoozebackup">Después</button></span></div>`;
+  }
+  return h;
+}
+
+function renderList(){
+  const sorted=[...records].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  if(!sorted.length){
+    app.innerHTML=banners()+`<section class="empty">
+      <span class="eyebrow">Antecedentes · Respuesta · Consecuencias</span>
+      <h2>Registra la emoción mientras la estás sintiendo</h2>
+      <p>Ponle nombre, marca su intensidad del 1 al 10 y guarda. Si estás apurado, con eso basta: después completas los pensamientos, sensaciones, conductas y consecuencias.</p>
+      <p>Todo queda guardado solo en este teléfono.</p>
+      <button class="linkbtn" data-act="example">Ver un registro de ejemplo</button>
+    </section>`;
+    bottom.innerHTML=fab();return;
+  }
+  const now=Date.now(),d7=now-7*864e5,d30=now-30*864e5;
+  const last7=sorted.filter(r=>parseLocal(r.fecha).getTime()>=d7);
+  const last30=sorted.filter(r=>parseLocal(r.fecha).getTime()>=d30);
+  const avg=last7.length?dec(last7.reduce((s,r)=>s+r.intensidad,0)/last7.length):"–";
+  const counts={};last30.forEach(r=>{const k=emoKey(r);counts[k]=(counts[k]||0)+1});
+  const order=EMOS.map(e=>e[0]).filter(k=>counts[k]);
+  const pend=sorted.filter(incomplete).length;
+  const present=[...new Set(sorted.map(emoKey))];
+  const shown=filter?sorted.filter(r=>emoKey(r)===filter):sorted;
+  const groups=[];shown.forEach(r=>{const k=(r.fecha||"").slice(0,10);let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,day:fmtDay(r.fecha),items:[]});g.items.push(r)});
+  app.innerHTML=banners()+`
+  <section class="panel">
+    <div class="nums">
+      <div class="num"><b>${last7.length}</b><span>registros en 7 días</span></div>
+      <div class="num"><b>${avg}</b><span>intensidad promedio</span></div>
+      <div class="num"><b>${pend}</b><span>por completar</span></div>
+    </div>
+    <div class="eyebrow">Tu arcoíris emocional · últimos 30 días</div>
+    <div class="rainbow">${order.map(k=>`<span style="flex:${counts[k]};background:${EMOCOL[k]}"></span>`).join("")}</div>
+    <div class="legend">${order.map(k=>`<span><i class="dot" style="background:${EMOCOL[k]}"></i>${esc(k)} ${counts[k]}</span>`).join("")||"<span>Sin registros en los últimos 30 días</span>"}</div>
+  </section>
+  ${present.length>1?`<div class="filters" role="group" aria-label="Filtrar por emoción">
+    <button class="chip" data-act="filter" data-v="" aria-pressed="${!filter}">Todas</button>
+    ${present.map(k=>`<button class="chip" data-act="filter" data-v="${esc(k)}" aria-pressed="${filter===k}"><i class="dot" style="background:${EMOCOL[k]}"></i>${esc(k)}</button>`).join("")}
+  </div>`:""}
+  ${groups.map(g=>`<section class="day"><h2>${esc(g.day)}</h2>${g.items.map(card).join("")}</section>`).join("")}`;
+  bottom.innerHTML=fab();
+}
+function card(r){
+  const prev=r.antecedentes.trim()||filled(r.pensamientos)[0]||"";
+  return `<button class="card" data-act="open" data-id="${r.id}">
+    <i class="dot" style="background:${emoColor(r)}"></i>
+    <span class="t">${esc(emoName(r))}</span>
+    <span class="h">${fmtTime(r.fecha)}</span>
+    <span class="meta">${meter(r.intensidad)}<span class="muted" style="font-size:.85rem">${r.intensidad}/10</span>${incomplete(r)?'<span class="pill warn">Por completar</span>':""}${r.relacionadoCon?'<span class="pill">En cadena</span>':""}</span>
+    ${prev?`<span class="p">${esc(prev)}</span>`:""}
+  </button>`;
+}
+
+function exampleRecord(){return normalize({id:"ejemplo",fecha:nowLocal(),duracion:"Unos 40 minutos",emocion:"Ansiedad",intensidad:7,
+  antecedentes:"Me llega un correo a las 22:00 pidiendo un informe para mañana temprano. Antes ya venía cansado por haber dormido poco.",antTipo:["Externo","Inmediato","Distante"],
+  pensamientos:["No voy a alcanzar.","Van a pensar que no soy capaz.","Me imagino la reunión de mañana con todos mirándome."],
+  sensaciones:["Apretón en el pecho","Mandíbula tensa","Calor en la cara"],
+  conductas:[{texto:"Reviso el celular una y otra vez",tipo:"hecha",corto:"Me distrae un rato, pero la ansiedad sube.",largo:"Pierdo tiempo y llego más cansado. No me sirve."},{texto:"Ganas de no ir a la reunión",tipo:"impulso",corto:"Alivio momentáneo al imaginarlo.",largo:"Evitar refuerza el miedo. No es la persona que quiero ser."}],
+  efectoEmocion:"Subió",efectoMalestar:"Subió",ayuda:"Me perjudica"})}
+
+function renderDetail(){
+  const r=example?exampleRecord():records.find(x=>x.id===currentId);
+  if(!r){view="list";return render()}
+  const ol=(arr,key)=>{const a=filled(arr);return a.length?`<ol>${a.map(x=>`<li>${esc(key?x[key]:x)}${x.tipo==="impulso"?' <span class="muted">(impulso)</span>':""}</li>`).join("")}</ol>`:'<span class="muted">Sin completar</span>'};
+  const rel=r.relacionadoCon&&records.find(x=>x.id===r.relacionadoCon);
+  const chained=records.filter(x=>x.relacionadoCon===r.id);
+  const conds=filled(r.conductas);
+  const pills=[r.efectoEmocion&&`Emoción: ${r.efectoEmocion}`,r.efectoMalestar&&`Malestar: ${r.efectoMalestar}`,r.ayuda].filter(Boolean);
+  app.innerHTML=`
+  <button class="back" data-act="back">${icon.back}Registros</button>
+  ${example?'<div class="notice">Este es un ejemplo. No se guarda en tus registros.</div>':""}
+  <div class="dhead">
+    <div class="emoname"><i class="dot" style="background:${emoColor(r)}"></i>${esc(emoName(r))}</div>
+    <div class="when">${esc(fmtFull(r.fecha))}${r.duracion?" · "+esc(r.duracion):""}</div>
+    <div style="display:flex;align-items:center;gap:10px">${meter(r.intensidad)}<span class="big">${r.intensidad}/10</span></div>
+    ${rel?`<div class="muted" style="font-size:.9rem">En cadena con <button class="linkbtn" data-act="open" data-id="${rel.id}">${esc(emoName(rel))} · ${esc(fmtTime(rel.fecha))}</button></div>`:""}
+    ${chained.length?`<div class="muted" style="font-size:.9rem">Emociones que siguieron: ${chained.map(c=>`<button class="linkbtn" data-act="open" data-id="${c.id}">${esc(emoName(c))}</button>`).join(", ")}</div>`:""}
+  </div>
+  <section class="sec">
+    <div class="sechead"><span class="letter">A</span><h2>Antecedentes</h2></div>
+    <div class="kv"><div class="v">${r.antecedentes.trim()?esc(r.antecedentes):'<span class="muted">Sin completar</span>'}</div></div>
+    ${r.antTipo.length?`<div class="chips">${r.antTipo.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}</div>`:""}
+  </section>
+  <section class="sec">
+    <div class="sechead"><span class="letter">R</span><h2>Respuesta</h2></div>
+    <div class="kv"><div class="k">Pensamientos</div>${ol(r.pensamientos)}</div>
+    <div class="kv"><div class="k">Sensaciones físicas</div>${ol(r.sensaciones)}</div>
+    <div class="kv"><div class="k">Conductas</div>${ol(r.conductas,"texto")}</div>
+  </section>
+  <section class="sec">
+    <div class="sechead"><span class="letter">C</span><h2>Consecuencias</h2></div>
+    ${pills.length?`<div class="chips">${pills.map(p=>`<span class="pill">${esc(p)}</span>`).join("")}</div>`:""}
+    ${conds.map((c,i)=>`<div class="cond"><div class="ct">${i+1}. ${esc(c.texto)}${c.tipo==="impulso"?' <span>(impulso)</span>':""}</div>
+      <div class="kv"><div class="k">Corto plazo</div><div class="v">${c.corto.trim()?esc(c.corto):'<span class="muted">—</span>'}</div></div>
+      <div class="kv"><div class="k">Largo plazo</div><div class="v">${c.largo.trim()?esc(c.largo):'<span class="muted">—</span>'}</div></div></div>`).join("")}
+    ${r.largoGeneral.trim()?`<div class="kv"><div class="k">¿Te sirve para la persona que quieres ser?</div><div class="v">${esc(r.largoGeneral)}</div></div>`:""}
+    ${r.cortoGeneral.trim()?`<div class="kv"><div class="k">Otras consecuencias inmediatas</div><div class="v">${esc(r.cortoGeneral)}</div></div>`:""}
+    ${!pills.length&&!conds.length&&!r.largoGeneral.trim()&&!r.cortoGeneral.trim()?'<span class="muted">Sin completar</span>':""}
+  </section>
+  ${example?"":`<div class="actions">
+    <button class="btn" data-act="related">Registrar emoción en cadena</button>
+    <button class="btn danger" data-act="del">Eliminar</button>
+  </div>`}`;
+  bottom.innerHTML=example?"":`<div class="savebar"><div class="wrap"><button class="btn primary" data-act="edit">${incomplete(r)?"Completar registro":"Editar registro"}</button></div></div>`;
+}
+
+function seg(path,val,opts){return `<div class="seg" role="group">${opts.map(([v,l])=>`<button type="button" data-act="seg" data-f="${path}" data-v="${esc(v)}" aria-pressed="${val===v}">${esc(l||v)}</button>`).join("")}</div>`}
+const opts=a=>a.map(x=>[x,x]);
+function listField(key,ph){
+  const arr=f[key];
+  return `<div class="list">${arr.map((v,i)=>`<div class="item">
+    <span class="n">${i+1}</span>
+    <div style="min-width:0;display:flex;flex-direction:column">
+      <textarea id="${key}-${i}" data-f="${key}.${i}${key==="conductas"?".texto":""}" placeholder="${esc(ph)}" rows="2">${esc(key==="conductas"?v.texto:v)}</textarea>
+      ${key==="conductas"?seg(`conductas.${i}.tipo`,v.tipo,[["hecha","Lo hice"],["impulso","Tuve el impulso"]]):""}
+    </div>
+    <span class="tools">
+      ${i>0?`<button type="button" class="mini" data-act="mv" data-k="${key}" data-i="${i}" data-d="-1" aria-label="Subir">${icon.up}</button>`:""}
+      ${i<arr.length-1?`<button type="button" class="mini" data-act="mv" data-k="${key}" data-i="${i}" data-d="1" aria-label="Bajar">${icon.down}</button>`:""}
+      <button type="button" class="mini" data-act="rm" data-k="${key}" data-i="${i}" aria-label="Quitar">${icon.x}</button>
+    </span>
+  </div>`).join("")}
+  <button type="button" class="add" data-act="add" data-k="${key}">+ Agregar ${key==="pensamientos"?"pensamiento":key==="sensaciones"?"sensación":"conducta"}</button></div>`;
+}
+
+function renderForm(){
+  const isNew=!records.some(x=>x.id===f.id);
+  const rel=f.relacionadoCon&&records.find(x=>x.id===f.relacionadoCon);
+  const conds=f.conductas.map((c,i)=>({c,i})).filter(o=>o.c.texto.trim());
+  const efect=opts(["Subió","Se mantuvo","Bajó"]);
+  app.innerHTML=`
+  <button class="back" data-act="cancel">${icon.back}${isNew?"Volver":"Cancelar"}</button>
+  ${draftRestored?`<div class="notice"><span>Recuperamos el registro que dejaste a medias.</span><button class="linkbtn" data-act="discard">Empezar de cero</button></div>`:""}
+  ${formErr?`<div class="err" id="err">${esc(formErr)}</div>`:""}
+  ${rel?`<div class="notice">Emoción en cadena con ${esc(emoName(rel))} de las ${esc(fmtTime(rel.fecha))}</div>`:""}
+  <section class="sec">
+    <div class="field"><span class="lbl">¿Qué emoción estás sintiendo?</span>
+      <div class="emo">${EMOS.map(([n,c])=>`<button type="button" class="chip" data-act="emo" data-v="${esc(n)}" aria-pressed="${f.emocion===n}"><i class="dot" style="background:${c}"></i>${esc(n)}</button>`).join("")}</div>
+      ${f.emocion==="Otra"?`<input type="text" id="emocionOtra" data-f="emocionOtra" value="${esc(f.emocionOtra)}" placeholder="Ponle nombre a la emoción">`:""}
+    </div>
+    <div class="field"><span class="lbl">Intensidad</span>
+      <div class="intens" role="group" aria-label="Intensidad del 1 al 10">${Array.from({length:10},(_,i)=>`<button type="button" data-act="int" data-v="${i+1}" aria-pressed="${f.intensidad===i+1}">${i+1}</button>`).join("")}</div>
+      <div class="scale"><span>Leve</span><span>Máxima</span></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="fecha">Fecha y hora</label><input type="datetime-local" id="fecha" data-f="fecha" value="${esc(f.fecha)}"></div>
+      <div class="field"><label for="duracion">¿Cuánto duró?</label><input type="text" id="duracion" data-f="duracion" value="${esc(f.duracion)}" placeholder="Ej: 15 min, toda la tarde"></div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="sechead"><span class="letter">A</span><div><h2>Antecedentes</h2><p>Lo que desencadenó la emoción</p></div></div>
+    <div class="field">
+      <p class="hint">Situaciones externas o eventos internos: sensaciones físicas, recuerdos o pensamientos. Pueden ser inmediatos o lejanos en el tiempo.</p>
+      <textarea id="antecedentes" data-f="antecedentes" rows="3" placeholder="¿Qué pasó justo antes? ¿Qué venía pasando?">${esc(f.antecedentes)}</textarea>
+      <div class="chips">${["Externo","Interno","Inmediato","Distante"].map(t=>`<button type="button" class="chip" data-act="ant" data-v="${t}" aria-pressed="${f.antTipo.includes(t)}">${t}</button>`).join("")}</div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="sechead"><span class="letter">R</span><div><h2>Respuesta</h2><p>Anótalos en el orden en que aparecieron</p></div></div>
+    <div class="field"><span class="lbl">Pensamientos</span>
+      <p class="hint">Tal cual aparecen en tu mente. También imágenes, escenas o recuerdos.</p>
+      ${listField("pensamientos","Ej: “No voy a alcanzar”")}
+    </div>
+    <div class="field subsec"><span class="lbl">Sensaciones físicas</span>
+      <p class="hint">¿Qué sientes en el cuerpo y dónde?</p>
+      ${listField("sensaciones","Ej: apretón en el pecho")}
+    </div>
+    <div class="field subsec"><span class="lbl">Conductas</span>
+      <p class="hint">Lo que hiciste o te dieron ganas de hacer. Incluye lo que hiciste para que la emoción no subiera, como irte de un lugar.</p>
+      ${listField("conductas","Ej: me fui de la reunión")}
+    </div>
+  </section>
+  <section class="sec">
+    <div class="sechead"><span class="letter">C</span><div><h2>Consecuencias</h2><p>Qué efecto tuvo lo que hiciste</p></div></div>
+    <div class="field"><span class="lbl">Después de actuar, la emoción…</span>${seg("efectoEmocion",f.efectoEmocion,efect)}</div>
+    <div class="field"><span class="lbl">Y el malestar…</span>${seg("efectoMalestar",f.efectoMalestar,efect)}</div>
+    ${conds.length?conds.map(({c,i},n)=>`<div class="cond">
+      <div class="ct">${n+1}. ${esc(c.texto)}${c.tipo==="impulso"?" <span>(impulso)</span>":""}</div>
+      <div class="field"><label for="c${i}corto">Corto plazo</label><textarea id="c${i}corto" data-f="conductas.${i}.corto" rows="2" placeholder="Efecto inmediato en ti y en tu entorno">${esc(c.corto)}</textarea></div>
+      <div class="field"><label for="c${i}largo">Largo plazo</label><textarea id="c${i}largo" data-f="conductas.${i}.largo" rows="2" placeholder="¿Te ayuda o te perjudica? ¿Te puede traer más problemas?">${esc(c.largo)}</textarea></div>
+    </div>`).join(""):`<p class="hint">Cuando agregues conductas en R, aquí aparece un espacio para las consecuencias de cada una por separado.</p>`}
+    <div class="field"><span class="lbl">¿Esta forma de actuar te sirve a largo plazo?</span>${seg("ayuda",f.ayuda,opts(["Me ayuda","A medias","Me perjudica"]))}</div>
+    <div class="field"><label for="largoGeneral">¿Te sirve para la persona que quieres ser? Expláyate</label><textarea id="largoGeneral" data-f="largoGeneral" rows="3">${esc(f.largoGeneral)}</textarea></div>
+    <div class="field"><label for="cortoGeneral">Otras consecuencias inmediatas</label><textarea id="cortoGeneral" data-f="cortoGeneral" rows="2">${esc(f.cortoGeneral)}</textarea></div>
+  </section>`;
+  bottom.innerHTML=`<div class="savebar"><div class="wrap"><button class="btn primary" data-act="save">Guardar registro</button></div></div>`;
+}
+
+/* ---------- evolución ---------- */
+function renderStats(){
+  const now=Date.now(), from=now-range*864e5;
+  const rs=records.filter(r=>{const t=parseLocal(r.fecha).getTime();return t>=from&&t<=now+864e5}).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const rangeBtns=`<div class="range" role="group" aria-label="Período">${[[7,"7 días"],[30,"30 días"],[90,"3 meses"]].map(([v,l])=>`<button class="chip" data-act="range" data-v="${v}" aria-pressed="${range===v}">${l}</button>`).join("")}</div>`;
+  if(!rs.length){app.innerHTML=rangeBtns+`<section class="empty"><h2>Todavía no hay datos en este período</h2><p>Cuando tengas algunos registros, aquí vas a ver cómo cambia la intensidad de tus emociones, cuáles aparecen más y qué pasa después de que actúas.</p></section>`;bottom.innerHTML="";return}
+  // gráfico de intensidad
+  const W=340,H=190,L=26,R=8,T=10,B=26,pw=W-L-R,ph=H-T-B;
+  const start=new Date(from);start.setHours(0,0,0,0);const t0=start.getTime(),t1=now;
+  const X=t=>L+(t-t0)/(t1-t0)*pw, Y=v=>T+ph-(v-1)/9*ph;
+  let svg=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Intensidad de cada registro en el período">`;
+  [1,5,10].forEach(v=>{svg+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+3.5}" text-anchor="end">${v}</text>`});
+  const ticks=range===7?7:4;
+  for(let i=0;i<=ticks;i++){const t=t0+(t1-t0)*i/ticks;const d=new Date(t);svg+=`<text x="${X(t)}" y="${H-8}" text-anchor="${i===0?"start":i===ticks?"end":"middle"}">${d.toLocaleDateString("es-CL",{day:"numeric",month:"short"})}</text>`}
+  const byDay={};rs.forEach(r=>{const k=r.fecha.slice(0,10);(byDay[k]=byDay[k]||[]).push(r.intensidad)});
+  const days=Object.keys(byDay).sort();
+  if(days.length>1){svg+=`<polyline class="avg" points="${days.map(k=>{const d=parseLocal(k+"T12:00").getTime();const a=byDay[k].reduce((s,v)=>s+v,0)/byDay[k].length;return `${X(Math.min(d,t1)).toFixed(1)},${Y(a).toFixed(1)}`}).join(" ")}"/>`}
+  rs.forEach(r=>{svg+=`<circle cx="${X(parseLocal(r.fecha).getTime()).toFixed(1)}" cy="${Y(r.intensidad).toFixed(1)}" r="4.5" fill="${emoColor(r)}" stroke="var(--surface)" stroke-width="1.5"/>`});
+  svg+="</svg>";
+  // por emoción
+  const agg={};rs.forEach(r=>{const k=emoKey(r);(agg[k]=agg[k]||{n:0,s:0});agg[k].n++;agg[k].s+=r.intensidad});
+  const keys=Object.keys(agg).sort((a,b)=>agg[b].n-agg[a].n);const maxN=Math.max(...keys.map(k=>agg[k].n));
+  // efecto de conductas
+  const eff={"Subió":0,"Se mantuvo":0,"Bajó":0};rs.forEach(r=>{if(eff[r.efectoEmocion]!=null)eff[r.efectoEmocion]++});const effN=eff["Subió"]+eff["Se mantuvo"]+eff["Bajó"];
+  const conds=rs.flatMap(r=>filled(r.conductas));const imp=conds.filter(c=>c.tipo==="impulso").length;
+  const ayu={"Me ayuda":0,"A medias":0,"Me perjudica":0};rs.forEach(r=>{if(ayu[r.ayuda]!=null)ayu[r.ayuda]++});const ayuN=ayu["Me ayuda"]+ayu["A medias"]+ayu["Me perjudica"];
+  const ant={};rs.forEach(r=>r.antTipo.forEach(t=>ant[t]=(ant[t]||0)+1));
+  const avg=rs.reduce((s,r)=>s+r.intensidad,0)/rs.length;
+  const hi=rs.filter(r=>r.intensidad>=8).length;
+  const split=(obj,n,cols)=>`<div class="split">${Object.keys(obj).filter(k=>obj[k]).map((k,i)=>`<span style="flex:${obj[k]};background:${cols[k]};color:#fff" title="${esc(k)}">${Math.round(obj[k]/n*100)}%</span>`).join("")}</div><div class="legend">${Object.keys(obj).map(k=>`<span><i class="dot" style="background:${cols[k]}"></i>${esc(k)} ${obj[k]}</span>`).join("")}</div>`;
+  const effCol={"Subió":"#C2453A","Se mantuvo":"#7D8894","Bajó":"#2E8A62"}, ayuCol={"Me ayuda":"#2E8A62","A medias":"#B88A2A","Me perjudica":"#C2453A"};
+  app.innerHTML=rangeBtns+`
+  <section class="panel">
+    <div class="nums">
+      <div class="num"><b>${rs.length}</b><span>registros</span></div>
+      <div class="num"><b>${dec(avg)}</b><span>intensidad promedio</span></div>
+      <div class="num"><b>${hi}</b><span>de intensidad 8 o más</span></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Intensidad en el tiempo</h2>
+    <p class="muted" style="font-size:.85rem">Cada punto es un registro, con el color de su emoción. La línea es el promedio de cada día.</p>
+    ${svg}
+  </section>
+  <section class="panel">
+    <h2>Emociones más frecuentes</h2>
+    <div class="hbars">${keys.map(k=>`<div class="hbar"><span class="nm"><i class="dot" style="background:${EMOCOL[k]}"></i>${esc(k)}</span><span class="tr"><span style="width:${agg[k].n/maxN*100}%;background:${EMOCOL[k]}"></span></span><span class="vl">${agg[k].n} · prom. ${dec(agg[k].s/agg[k].n)}</span></div>`).join("")}</div>
+  </section>
+  <section class="panel">
+    <h2>Después de actuar, la emoción…</h2>
+    ${effN?split(eff,effN,effCol):'<p class="muted">Aún no marcas este dato en tus registros.</p>'}
+  </section>
+  <section class="panel">
+    <h2>¿Te sirve a largo plazo?</h2>
+    ${ayuN?split(ayu,ayuN,ayuCol):'<p class="muted">Aún no marcas este dato en tus registros.</p>'}
+  </section>
+  <section class="panel">
+    <h2>Conductas y antecedentes</h2>
+    <p>${conds.length?`Registraste <b>${conds.length}</b> conducta${conds.length===1?"":"s"}: ${conds.length-imp} que hiciste y ${imp} que quedaron en impulso.`:"Aún no hay conductas registradas en este período."}</p>
+    ${Object.keys(ant).length?`<div class="chips">${["Externo","Interno","Inmediato","Distante"].filter(k=>ant[k]).map(k=>`<span class="pill">${k}: ${ant[k]}</span>`).join("")}</div>`:""}
+  </section>`;
+  bottom.innerHTML="";
+}
+
+/* ---------- ajustes ---------- */
+function renderSettings(){
+  const n=records.length, hasPin=!!ls.get(K.pin,null), last=+ls.get(K.backup,0);
+  let pinUI;
+  if(pinStep==="new"||pinStep==="confirm")pinUI=`<div class="field"><label for="pinin">${pinStep==="new"?"Elige un PIN de 4 a 6 números":"Repite el PIN"}</label><input type="password" id="pinin" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></div><div class="actions"><button class="btn primary" data-act="pinnext">${pinStep==="new"?"Siguiente":"Guardar PIN"}</button><button class="btn" data-act="pincancel">Cancelar</button></div>`;
+  else pinUI=hasPin?`<div class="actions"><button class="btn" data-act="pinset">Cambiar PIN</button><button class="btn danger" data-act="pinoff">Quitar PIN</button></div>`:`<button class="btn" data-act="pinset">Activar PIN</button>`;
+  app.innerHTML=`
+  <div class="optrow"><h3>Bloqueo con PIN</h3>
+    <p>${hasPin?"La app pide tu PIN al abrirla y al volver a ella después de un minuto.":"Pide un PIN al abrir la app, para que nadie más vea tus registros si toma tu teléfono."}</p>
+    <p style="font-size:.82rem">El PIN tapa la pantalla, pero los registros no quedan cifrados. Si olvidas el PIN, la única forma de entrar es borrar los datos del sitio y restaurar un respaldo.</p>
+    ${pinUI}
+  </div>
+  <div class="optrow"><h3>Para llevar a tu sesión</h3><p>Un documento de texto con tus ${n} registro${n===1?"":"s"}, ordenados por fecha y separados en A, R y C.</p>
+    <div class="actions"><button class="btn primary" data-act="dlmd" ${n?"":"disabled"}>Descargar documento</button><button class="btn" data-act="sharemd" ${n?"":"disabled"}>Compartir</button><button class="btn" data-act="copymd" ${n?"":"disabled"}>Copiar texto</button></div></div>
+  <div class="optrow"><h3>Respaldo</h3><p>Tus registros viven solo en este teléfono. Descarga un respaldo cada semana y guárdalo en Drive, iCloud o tu correo.</p>
+    <p style="font-size:.85rem">${last?"Último respaldo: "+new Date(last).toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"}):"Todavía no has hecho un respaldo."}</p>
+    <button class="btn" data-act="dljson" ${n?"":"disabled"}>Descargar respaldo</button></div>
+  <div class="optrow"><h3>Importar respaldo</h3><p>Suma los registros de un respaldo, por ejemplo al cambiar de teléfono. Si un registro ya existe, se reemplaza por el del archivo.</p>
+    <button class="btn" data-act="import">Elegir archivo</button></div>
+  ${exportText!=null?`<div class="optrow"><h3>Texto para copiar</h3><p>Mantén presionado para seleccionarlo todo y copiarlo.</p><textarea class="copyarea" id="copyarea" readonly>${esc(exportText)}</textarea></div>`:""}
+  <div class="optrow"><h3>Instalar en el teléfono</h3>
+    ${isStandalone()?"<p>La app ya está instalada.</p>":`<ol class="steps"><li><b>iPhone:</b> abre esta página en Safari, toca Compartir y luego “Agregar a inicio”.</li><li><b>Android:</b> en Chrome, toca el menú ⋮ y luego “Instalar app” o “Agregar a pantalla principal”.</li></ol>${installEvt?'<button class="btn" data-act="install">Instalar ahora</button>':""}`}
+  </div>`;
+  bottom.innerHTML="";
+  if(pinStep){const i=$("#pinin");if(i)i.focus()}
+}
+
+/* ---------- exportar ---------- */
+function toMarkdown(){
+  const s=[...records].sort((a,b)=>(a.fecha||"").localeCompare(b.fecha||""));
+  const L=["# Registro ARCO",""];
+  s.forEach(r=>{
+    L.push(`## ${fmtFull(r.fecha)} · ${emoName(r)} · intensidad ${r.intensidad}/10`);
+    if(r.duracion)L.push(`Duración: ${r.duracion}`);
+    const rel=r.relacionadoCon&&records.find(x=>x.id===r.relacionadoCon);if(rel)L.push(`En cadena con: ${emoName(rel)} (${fmtFull(rel.fecha)})`);
+    L.push("","**A · Antecedentes**",r.antecedentes.trim()||"—");if(r.antTipo.length)L.push(`(${r.antTipo.join(", ")})`);
+    L.push("","**R · Respuesta**","Pensamientos:");filled(r.pensamientos).forEach((p,i)=>L.push(`${i+1}. ${p}`));
+    L.push("","Sensaciones físicas:");filled(r.sensaciones).forEach((p,i)=>L.push(`${i+1}. ${p}`));
+    L.push("","Conductas:");filled(r.conductas).forEach((c,i)=>L.push(`${i+1}. ${c.texto}${c.tipo==="impulso"?" (impulso)":""}`));
+    L.push("","**C · Consecuencias**");
+    if(r.efectoEmocion)L.push(`Emoción después de actuar: ${r.efectoEmocion}`);
+    if(r.efectoMalestar)L.push(`Malestar: ${r.efectoMalestar}`);
+    filled(r.conductas).forEach((c,i)=>{L.push(`Conducta ${i+1} (${c.texto}):`,`- Corto plazo: ${c.corto||"—"}`,`- Largo plazo: ${c.largo||"—"}`)});
+    if(r.cortoGeneral.trim())L.push(`Otras consecuencias inmediatas: ${r.cortoGeneral}`);
+    if(r.ayuda)L.push(`¿Sirve a largo plazo?: ${r.ayuda}`);
+    if(r.largoGeneral.trim())L.push(`Reflexión: ${r.largoGeneral}`);
+    L.push("","---","");
+  });
+  return L.join("\n");
+}
+const stamp=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+function fileFor(kind){
+  if(kind==="json")return new File([JSON.stringify({app:"registro-arco",version:1,exportado:new Date().toISOString(),registros:records},null,2)],`respaldo-arco-${stamp()}.json`,{type:"application/json"});
+  return new File([toMarkdown()],`registro-arco-${stamp()}.txt`,{type:"text/plain"});
+}
+function download(file){
+  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+}
+async function share(file){
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:file.name});return true}catch(e){if(e&&e.name==="AbortError")return false}}
+  download(file);return true;
+}
+
+/* ---------- PIN ---------- */
+async function hashPin(pin,salt){const d=new TextEncoder().encode(salt+":"+pin);const h=await crypto.subtle.digest("SHA-256",d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("")}
+let entered="";
+function buildKeypad(){
+  $("#keypad").innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<button data-key="${n}">${n}</button>`).join("")+`<span></span><button data-key="0">0</button><button class="ghost" data-key="del" aria-label="Borrar">Borrar</button>`;
+}
+function drawDots(){const len=(JSON.parse(ls.get(K.pin,"{}")).len)||4;$("#pindots").innerHTML=Array.from({length:len},(_,i)=>`<i class="${i<entered.length?"on":""}"></i>`).join("")}
+function lockNow(){if(!ls.get(K.pin,null))return;entered="";$("#lockmsg").textContent="";drawDots();$("#lock").hidden=false;document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}
+async function tryPin(){
+  const p=JSON.parse(ls.get(K.pin,"{}"));
+  if(await hashPin(entered,p.salt)===p.hash){$("#lock").hidden=true;entered="";return}
+  const d=$("#pindots");d.classList.remove("shake");void d.offsetWidth;d.classList.add("shake");
+  $("#lockmsg").textContent="PIN incorrecto";entered="";setTimeout(drawDots,250);
+}
+$("#keypad").addEventListener("click",e=>{
+  const b=e.target.closest("[data-key]");if(!b)return;const k=b.dataset.key;const p=JSON.parse(ls.get(K.pin,"{}"));
+  if(k==="del")entered=entered.slice(0,-1);else if(entered.length<(p.len||4))entered+=k;
+  $("#lockmsg").textContent="";drawDots();
+  if(entered.length===(p.len||4))setTimeout(tryPin,120);
+});
+document.addEventListener("keydown",e=>{if($("#lock").hidden)return;if(/^\d$/.test(e.key)){$(`[data-key="${e.key}"]`).click()}else if(e.key==="Backspace"){$('[data-key="del"]').click()}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>LOCK_AFTER_MS)lockNow()});
+
+/* ---------- eventos ---------- */
+function setPath(path,val){const p=path.split(".");let o=f;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=val}
+function getPath(path){return path.split(".").reduce((o,k)=>o[k],f)}
+let draftT=null;
+function saveDraft(){clearTimeout(draftT);draftT=setTimeout(()=>{if(view==="form"&&!records.some(x=>x.id===f.id))ls.set(K.draft,JSON.stringify(f))},400)}
+function rerenderKeep(focusId){const y=window.scrollY;renderForm();setChrome();window.scrollTo(0,y);if(focusId){const el=document.getElementById(focusId);if(el)el.focus()}}
+function toast(msg){let t=$(".toast");if(!t){t=document.createElement("div");t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}t.textContent=msg;clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),3200)}
+function go(v){view=v;formErr="";render();window.scrollTo(0,0)}
+function markBackup(){ls.set(K.backup,String(Date.now()))}
+
+document.addEventListener("input",e=>{const el=e.target;if(view!=="form"||!el.dataset||!el.dataset.f)return;setPath(el.dataset.f,el.value);saveDraft()});
+document.addEventListener("change",e=>{const el=e.target;if(view==="form"&&el.dataset&&/^conductas\.\d+\.texto$/.test(el.dataset.f||""))rerenderKeep()});
+
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+  if(a==="tab"){tab=b.dataset.v;exportText=null;pinStep=null;example=false;go("list");return}
+  if(a==="new"){example=false;let d=null;try{d=JSON.parse(ls.get(K.draft,"null"))}catch(_){}
+    if(d&&!records.some(x=>x.id===d.id)){f=normalize(d);if(!f.pensamientos.length)f.pensamientos=[""];if(!f.sensaciones.length)f.sensaciones=[""];if(!f.conductas.length)f.conductas=[blankCond()];draftRestored=true}else{f=blank();draftRestored=false}go("form");return}
+  if(a==="example"){example=true;go("detail");return}
+  if(a==="open"){example=false;currentId=b.dataset.id;go("detail");return}
+  if(a==="back"){example=false;go("list");return}
+  if(a==="lock"){lockNow();return}
+  if(a==="filter"){filter=b.dataset.v||null;render();return}
+  if(a==="range"){range=+b.dataset.v;render();return}
+  if(a==="install"){if(installEvt){installEvt.prompt();try{await installEvt.userChoice}catch(_){}installEvt=null;render()}return}
+  if(a==="hideinstall"){ls.set(K.hideInstall,"1");render();return}
+  if(a==="snoozebackup"){ls.set(K.hideBackup,String(Date.now()));render();return}
+  if(a==="edit"){const r=records.find(x=>x.id===currentId);if(!r)return;f=normalize(clone(r));
+    if(!f.pensamientos.length)f.pensamientos=[""];if(!f.sensaciones.length)f.sensaciones=[""];if(!f.conductas.length)f.conductas=[blankCond()];
+    draftRestored=false;go("form");return}
+  if(a==="related"){const r=records.find(x=>x.id===currentId);f=blank();f.relacionadoCon=currentId;if(r)f.fecha=r.fecha;draftRestored=false;go("form");return}
+  if(a==="cancel"){const isNew=!records.some(x=>x.id===f.id);go(isNew?"list":"detail");return}
+  if(a==="discard"){ls.del(K.draft);f=blank();draftRestored=false;rerenderKeep();return}
+  if(a==="emo"){f.emocion=f.emocion===b.dataset.v?"":b.dataset.v;saveDraft();rerenderKeep(f.emocion==="Otra"?"emocionOtra":null);return}
+  if(a==="int"){f.intensidad=+b.dataset.v;saveDraft();rerenderKeep();return}
+  if(a==="ant"){const v=b.dataset.v;f.antTipo=f.antTipo.includes(v)?f.antTipo.filter(x=>x!==v):[...f.antTipo,v];saveDraft();rerenderKeep();return}
+  if(a==="seg"){setPath(b.dataset.f,getPath(b.dataset.f)===b.dataset.v&&!/\.tipo$/.test(b.dataset.f)?"":b.dataset.v);saveDraft();rerenderKeep();return}
+  if(a==="add"){const k=b.dataset.k;f[k].push(k==="conductas"?blankCond():"");saveDraft();rerenderKeep(`${k}-${f[k].length-1}`);return}
+  if(a==="rm"){const k=b.dataset.k;f[k].splice(+b.dataset.i,1);saveDraft();rerenderKeep();return}
+  if(a==="mv"){const k=b.dataset.k,i=+b.dataset.i,j=i+ +b.dataset.d;[f[k][i],f[k][j]]=[f[k][j],f[k][i]];saveDraft();rerenderKeep();return}
+  if(a==="save"){
+    const fail=(msg,focus)=>{formErr=msg;rerenderKeep(focus);const er=$("#err");if(er&&!focus)er.scrollIntoView({block:"center"})};
+    if(!f.emocion)return fail("Elige la emoción que estás sintiendo antes de guardar.");
+    if(f.emocion==="Otra"&&!f.emocionOtra.trim())return fail("Escribe el nombre de la emoción.","emocionOtra");
+    if(!f.intensidad)return fail("Marca la intensidad del 1 al 10 antes de guardar.");
+    const r=clone(f);r.pensamientos=r.pensamientos.filter(x=>x.trim());r.sensaciones=r.sensaciones.filter(x=>x.trim());r.conductas=r.conductas.filter(c=>c.texto.trim()||c.corto.trim()||c.largo.trim());
+    try{persist(r);ls.del(K.draft);currentId=r.id;draftRestored=false;go("detail");toast(incomplete(r)?"Guardado. Puedes completarlo después.":"Registro guardado")}
+    catch(err){fail("No se pudo guardar porque el teléfono no tiene espacio para la app. Libera espacio o descarga un respaldo, e inténtalo de nuevo. Lo que escribiste sigue aquí.")}
+    return}
+  if(a==="del"){if(!delArmed){delArmed=true;b.classList.add("armed");b.textContent="Toca otra vez para eliminar";setTimeout(()=>{if(delArmed&&b.isConnected){delArmed=false;b.classList.remove("armed");b.textContent="Eliminar"}},4000);return}
+    try{remove(currentId);go("list");toast("Registro eliminado")}catch(_){toast("No se pudo eliminar. Inténtalo de nuevo.")}return}
+  if(a==="dlmd"){download(fileFor("md"));toast("Documento descargado");return}
+  if(a==="sharemd"){await share(fileFor("md"));return}
+  if(a==="copymd"){const t=toMarkdown();try{await navigator.clipboard.writeText(t);toast("Texto copiado")}catch(_){exportText=t;render();const ta=$("#copyarea");if(ta){ta.focus();ta.select();ta.scrollIntoView({block:"center"})}}return}
+  if(a==="dljson"){const file=fileFor("json");const ok=await share(file);if(ok){markBackup();toast("Respaldo listo");render()}return}
+  if(a==="import"){$("#importfile").click();return}
+  if(a==="pinset"){pinStep="new";pinTmp="";render();return}
+  if(a==="pincancel"){pinStep=null;render();return}
+  if(a==="pinoff"){ls.del(K.pin);toast("PIN desactivado");render();return}
+  if(a==="pinnext"){const v=($("#pinin").value||"").trim();
+    if(!/^\d{4,6}$/.test(v)){toast("El PIN debe tener entre 4 y 6 números");return}
+    if(pinStep==="new"){pinTmp=v;pinStep="confirm";render();return}
+    if(v!==pinTmp){toast("Los PIN no coinciden. Vuelve a elegirlo.");pinStep="new";render();return}
+    const salt=Math.random().toString(36).slice(2);ls.set(K.pin,JSON.stringify({salt,hash:await hashPin(v,salt),len:v.length}));pinStep=null;pinTmp="";toast("PIN activado");render();return}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="pinin"){e.preventDefault();$('[data-act="pinnext"]').click()}});
+
+$("#importfile").addEventListener("change",async e=>{
+  const file=e.target.files[0];e.target.value="";if(!file)return;
+  try{const data=JSON.parse(await file.text());const arr=Array.isArray(data)?data:data.registros;if(!Array.isArray(arr))throw 0;
+    const prev=records;let n=0;const map=new Map(records.map(r=>[r.id,r]));
+    arr.forEach(x=>{if(x&&x.id){map.set(String(x.id),normalize(x));n++}});
+    records=[...map.values()];try{saveAll()}catch(_){records=prev;toast("No hay espacio para importar. Libera espacio en el teléfono.");return}
+    toast(`Importamos ${n} registro${n===1?"":"s"}`);render();
+  }catch(_){toast("Ese archivo no es un respaldo de Registro ARCO.")}
+});
+
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;if(view!=="form")render()});
+window.addEventListener("appinstalled",()=>{installEvt=null;toast("App instalada");render()});
+
+/* ---------- inicio ---------- */
+records=load(); buildKeypad();
+if(ls.get(K.pin,null))lockNow();
+render();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if("serviceWorker" in navigator&&location.protocol!=="file:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
