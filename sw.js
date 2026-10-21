@@ -1,6 +1,6 @@
 // Service worker de Registro ARCO: guarda la app para que funcione sin internet.
 // Al publicar una versión nueva, cambia VERSION para que los teléfonos la actualicen.
-const VERSION = "arco-v2";
+const VERSION = "arco-v3";
 const APP = [
   "./",
   "./index.html",

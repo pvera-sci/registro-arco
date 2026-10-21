@@ -136,6 +136,8 @@ textarea{min-height:76px;resize:vertical}
 .mini:hover{background:var(--surface-2)}
 .mini svg{width:16px;height:16px}
 .add{border:1px dashed var(--line);background:none;border-radius:10px;padding:10px;color:var(--accent);font-weight:700;text-align:left}
+.plazo{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:14px}
+.plazo h3{margin:0;font-family:var(--f-display);font-size:1rem}
 .subsec{border-top:1px solid var(--line);padding-top:14px}
 .cond{background:var(--bg);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
 .cond .ct{font-weight:700;font-size:.92rem;overflow-wrap:anywhere}
@@ -410,11 +412,11 @@ function renderDetail(){
   <section class="sec">
     <div class="sechead"><span class="letter">C</span><h2>Consecuencias</h2></div>
     ${pills.length?`<div class="chips">${pills.map(p=>`<span class="pill">${esc(p)}</span>`).join("")}</div>`:""}
+    ${r.cortoGeneral.trim()?`<div class="kv"><div class="k">Consecuencias a corto plazo</div><div class="v">${esc(r.cortoGeneral)}</div></div>`:""}
+    ${r.largoGeneral.trim()?`<div class="kv"><div class="k">Consecuencias a largo plazo</div><div class="v">${esc(r.largoGeneral)}</div></div>`:""}
     ${conds.map((c,i)=>`<div class="cond"><div class="ct">${i+1}. ${esc(c.texto)}${c.tipo==="impulso"?' <span>(impulso)</span>':""}</div>
       <div class="kv"><div class="k">Corto plazo</div><div class="v">${c.corto.trim()?esc(c.corto):'<span class="muted">—</span>'}</div></div>
       <div class="kv"><div class="k">Largo plazo</div><div class="v">${c.largo.trim()?esc(c.largo):'<span class="muted">—</span>'}</div></div></div>`).join("")}
-    ${r.largoGeneral.trim()?`<div class="kv"><div class="k">¿Te sirve para la persona que quieres ser?</div><div class="v">${esc(r.largoGeneral)}</div></div>`:""}
-    ${r.cortoGeneral.trim()?`<div class="kv"><div class="k">Otras consecuencias inmediatas</div><div class="v">${esc(r.cortoGeneral)}</div></div>`:""}
     ${!pills.length&&!conds.length&&!r.largoGeneral.trim()&&!r.cortoGeneral.trim()?'<span class="muted">Sin completar</span>':""}
   </section>
   ${example?"":`<div class="actions">
@@ -491,17 +493,30 @@ function renderForm(){
     </div>
   </section>
   <section class="sec">
-    <div class="sechead"><span class="letter">C</span><div><h2>Consecuencias</h2><p>Qué efecto tuvo lo que hiciste</p></div></div>
-    <div class="field"><span class="lbl">Después de actuar, la emoción…</span>${seg("efectoEmocion",f.efectoEmocion,efect)}</div>
-    <div class="field"><span class="lbl">Y el malestar…</span>${seg("efectoMalestar",f.efectoMalestar,efect)}</div>
-    ${conds.length?conds.map(({c,i},n)=>`<div class="cond">
-      <div class="ct">${n+1}. ${esc(c.texto)}${c.tipo==="impulso"?" <span>(impulso)</span>":""}</div>
-      <div class="field"><label for="c${i}corto">Corto plazo</label><textarea id="c${i}corto" data-f="conductas.${i}.corto" rows="2" placeholder="Efecto inmediato en ti y en tu entorno">${esc(c.corto)}</textarea></div>
-      <div class="field"><label for="c${i}largo">Largo plazo</label><textarea id="c${i}largo" data-f="conductas.${i}.largo" rows="2" placeholder="¿Te ayuda o te perjudica? ¿Te puede traer más problemas?">${esc(c.largo)}</textarea></div>
-    </div>`).join(""):`<p class="hint">Cuando agregues conductas en R, aquí aparece un espacio para las consecuencias de cada una por separado.</p>`}
-    <div class="field"><span class="lbl">¿Esta forma de actuar te sirve a largo plazo?</span>${seg("ayuda",f.ayuda,opts(["Me ayuda","A medias","Me perjudica"]))}</div>
-    <div class="field"><label for="largoGeneral">¿Te sirve para la persona que quieres ser? Expláyate</label><textarea id="largoGeneral" data-f="largoGeneral" rows="3">${esc(f.largoGeneral)}</textarea></div>
-    <div class="field"><label for="cortoGeneral">Otras consecuencias inmediatas</label><textarea id="cortoGeneral" data-f="cortoGeneral" rows="2">${esc(f.cortoGeneral)}</textarea></div>
+    <div class="sechead"><span class="letter">C</span><div><h2>Consecuencias</h2><p>Qué efecto tuvo lo que hiciste, ahora y a futuro</p></div></div>
+    <div class="plazo">
+      <h3>Corto plazo</h3>
+      <div class="field"><span class="lbl">Después de actuar, la emoción…</span>${seg("efectoEmocion",f.efectoEmocion,efect)}</div>
+      <div class="field"><span class="lbl">Y el malestar…</span>${seg("efectoMalestar",f.efectoMalestar,efect)}</div>
+      <div class="field"><label for="cortoGeneral">Consecuencias a corto plazo</label>
+        <p class="hint">¿Qué efectos inmediatos tuvo en ti y en tu entorno?</p>
+        <textarea id="cortoGeneral" data-f="cortoGeneral" rows="3">${esc(f.cortoGeneral)}</textarea></div>
+    </div>
+    <div class="plazo">
+      <h3>Largo plazo</h3>
+      <div class="field"><span class="lbl">¿Esta forma de actuar te sirve a largo plazo?</span>${seg("ayuda",f.ayuda,opts(["Me ayuda","A medias","Me perjudica"]))}</div>
+      <div class="field"><label for="largoGeneral">Consecuencias a largo plazo</label>
+        <p class="hint">¿Te ayuda o te perjudica? ¿Puede traerte más problemas a futuro? ¿Te sirve para la persona que quieres ser? Expláyate.</p>
+        <textarea id="largoGeneral" data-f="largoGeneral" rows="4">${esc(f.largoGeneral)}</textarea></div>
+    </div>
+    <div class="plazo">
+      <h3>Consecuencias de cada conducta</h3>
+      ${conds.length?conds.map(({c,i},n)=>`<div class="cond">
+        <div class="ct">${n+1}. ${esc(c.texto)}${c.tipo==="impulso"?" <span>(impulso)</span>":""}</div>
+        <div class="field"><label for="c${i}corto">Corto plazo</label><textarea id="c${i}corto" data-f="conductas.${i}.corto" rows="2" placeholder="Efecto inmediato en ti y en tu entorno">${esc(c.corto)}</textarea></div>
+        <div class="field"><label for="c${i}largo">Largo plazo</label><textarea id="c${i}largo" data-f="conductas.${i}.largo" rows="2" placeholder="¿Te ayuda o te perjudica? ¿Te puede traer más problemas?">${esc(c.largo)}</textarea></div>
+      </div>`).join(""):`<p class="hint" style="margin:0">Cuando escribas conductas en R, aquí aparece un espacio de corto y largo plazo para cada una por separado.</p>`}
+    </div>
   </section>`;
   bottom.innerHTML=`<div class="savebar"><div class="wrap"><button class="btn primary" data-act="save">Guardar registro</button></div></div>`;
 }
@@ -625,9 +640,9 @@ function toMarkdown(){
     if(r.efectoEmocion)L.push(`Emoción después de actuar: ${r.efectoEmocion}`);
     if(r.efectoMalestar)L.push(`Malestar: ${r.efectoMalestar}`);
     filled(r.conductas).forEach((c,i)=>{L.push(`Conducta ${i+1} (${c.texto}):`,`- Corto plazo: ${c.corto||"—"}`,`- Largo plazo: ${c.largo||"—"}`)});
-    if(r.cortoGeneral.trim())L.push(`Otras consecuencias inmediatas: ${r.cortoGeneral}`);
+    if(r.cortoGeneral.trim())L.push(`Consecuencias a corto plazo: ${r.cortoGeneral}`);
     if(r.ayuda)L.push(`¿Sirve a largo plazo?: ${r.ayuda}`);
-    if(r.largoGeneral.trim())L.push(`Reflexión: ${r.largoGeneral}`);
+    if(r.largoGeneral.trim())L.push(`Consecuencias a largo plazo: ${r.largoGeneral}`);
     L.push("","---","");
   });
   return L.join("\n");
@@ -723,8 +738,13 @@ async function buildPDF(){
     label("Conductas");list(filled(r.conductas).map(c=>c.texto+(c.tipo==="impulso"?" (impulso)":"")));
     y+=1;
     section("C","Consecuencias");
-    const eff=[r.efectoEmocion&&"Emoción después de actuar: "+r.efectoEmocion,r.efectoMalestar&&"Malestar: "+r.efectoMalestar,r.ayuda&&"¿Sirve a largo plazo?: "+r.ayuda].filter(Boolean);
-    if(eff.length)para(eff.join("   ·   "),{x:M+4,w:CW-4,size:9.5,c:MUTED});
+    const effC=[r.efectoEmocion&&"Emoción después de actuar: "+r.efectoEmocion,r.efectoMalestar&&"Malestar: "+r.efectoMalestar].filter(Boolean);
+    label("Corto plazo");
+    if(effC.length)para(effC.join("   ·   "),{x:M+4,w:CW-4,size:9.5,c:MUTED,gap:0.4});
+    para(r.cortoGeneral.trim()||"—",{x:M+4,w:CW-4,c:r.cortoGeneral.trim()?INK:MUTED});
+    label("Largo plazo");
+    if(r.ayuda)para("¿Le sirve a largo plazo?: "+r.ayuda,{x:M+4,w:CW-4,size:9.5,c:MUTED,gap:0.4});
+    para(r.largoGeneral.trim()||"—",{x:M+4,w:CW-4,c:r.largoGeneral.trim()?INK:MUTED});
     const conds=filled(r.conductas);
     conds.forEach((c,i)=>{
       ensure(18);font(10,"bold");color(INK);
@@ -732,9 +752,6 @@ async function buildPDF(){
       label("Corto plazo");para(c.corto.trim()||"—",{x:M+8,w:CW-8});
       label("Largo plazo");para(c.largo.trim()||"—",{x:M+8,w:CW-8});
     });
-    if(r.largoGeneral.trim()){label("¿Le sirve para la persona que quiere ser?");para(r.largoGeneral,{x:M+4,w:CW-4})}
-    if(r.cortoGeneral.trim()){label("Otras consecuencias inmediatas");para(r.cortoGeneral,{x:M+4,w:CW-4})}
-    if(!eff.length&&!conds.length&&!r.largoGeneral.trim()&&!r.cortoGeneral.trim())para("—",{x:M+4,w:CW-4,c:MUTED});
     y+=4;
   });
   // pie de página
