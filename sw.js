@@ -1,6 +1,6 @@
 // Service worker de Registro ARCO: guarda la app para que funcione sin internet.
 // Al publicar una versión nueva, cambia VERSION para que los teléfonos la actualicen.
-const VERSION = "arco-v1";
+const VERSION = "arco-v2";
 const APP = [
   "./",
   "./index.html",
@@ -8,7 +8,8 @@ const APP = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon.png"
+  "./icons/apple-touch-icon.png",
+  "./vendor/jspdf.umd.min.js"
 ];
 
 self.addEventListener("install", (e) => {
